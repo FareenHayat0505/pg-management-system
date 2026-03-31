@@ -266,7 +266,7 @@ const Payments = () => {
               </thead>
               <tbody>
                 {filtered.map((item, i) => {
-                  const { tenant, currentPayment, status, daysOverdue } = item;
+                  const { tenant, currentPayment, status } = item;
                   return (
                     <tr
                       key={tenant._id}
