@@ -99,7 +99,7 @@ const TenantDashboard = () => {
       </div>
 
       {/* ── Row 2 ── */}
-      <div style={s.row2}>
+      <div className="tenant-row2 dash-row2" style={s.row2}>
 
         {/* My Room Details */}
         <div style={s.card}>
@@ -158,7 +158,7 @@ const TenantDashboard = () => {
         </div>
 
         {/* Payment History */}
-        <div style={{...s.card, flex: 2}}>
+       <div style={{...s.card, flex: 2, minWidth: 0, overflow: 'hidden'}}>
           <div style={s.cardHead}>
             <div style={s.cardTitle}>Payment History</div>
             <div style={s.paymentSummaryRow}>
@@ -185,7 +185,7 @@ const TenantDashboard = () => {
               <div style={s.emptyText}>Your payment history will appear here</div>
             </div>
           ) : (
-            <div style={s.tableWrap}>
+            <div className="table-wrap" style={s.tableWrap}>
               <table style={s.table}>
                 <thead>
                   <tr style={s.thead}>
@@ -245,7 +245,12 @@ const s = {
   kpiLabel: { fontSize: '13px', fontWeight: '600', color: '#111827', fontFamily: F, marginBottom: '3px' },
   kpiSub: { fontSize: '12px', color: '#6b7280', fontFamily: F },
 
-  row2: { display: 'flex', gap: '16px', alignItems: 'flex-start' },
+  row2: { 
+  display: 'flex', 
+  gap: '16px', 
+  alignItems: 'flex-start',
+  minWidth: 0,
+},
   card: { backgroundColor: 'white', borderRadius: '12px', padding: '20px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', flex: 1 },
   cardHead: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' },
   cardTitle: { fontSize: '14px', fontWeight: '700', color: '#111827', fontFamily: F },
@@ -276,8 +281,18 @@ const s = {
   emptyTitle: { fontSize: '14px', fontWeight: '700', color: '#111827', fontFamily: F, marginBottom: '4px' },
   emptyText: { fontSize: '13px', color: '#6b7280', fontFamily: F },
 
-  tableWrap: { borderRadius: '10px', border: '1px solid #e5e7eb', overflow: 'hidden' },
-  table: { width: '100%', borderCollapse: 'collapse' },
+tableWrap: { 
+  borderRadius: '10px', 
+  border: '1px solid #e5e7eb', 
+  overflow: 'auto',
+  overflowX: 'auto',
+  WebkitOverflowScrolling: 'touch',
+},
+  table: { 
+  width: '100%', 
+  borderCollapse: 'collapse',
+  minWidth: '400px',
+},
   thead: { backgroundColor: '#f9fafb' },
   th: { padding: '11px 14px', textAlign: 'left', fontSize: '11px', fontWeight: '700', color: '#6b7280', letterSpacing: '0.5px', textTransform: 'uppercase', fontFamily: F, borderBottom: '1px solid #e5e7eb' },
   td: { padding: '12px 14px', fontSize: '13px', color: '#374151', fontFamily: F, verticalAlign: 'middle' },

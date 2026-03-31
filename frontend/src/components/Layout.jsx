@@ -16,7 +16,7 @@ const Layout = ({ children, title, subtitle, action }) => {
       )}
 
       {/* Sidebar — NO inline position styles, let CSS handle it */}
-      <div className={`sidebar-wrap ${open ? 'open' : ''}`}>
+     <div className={`sidebar-wrap ${open ? 'open' : ''}`}>
         <Sidebar onClose={() => setOpen(false)} />
       </div>
 
