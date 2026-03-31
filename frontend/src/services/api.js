@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Base URL of your backend
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api'
+  baseURL: process.env.REACT_APP_API_URL || 'https://pg-management-system-j9ya.onrender.com/api'
 });
 
 // Automatically attach token to every request
