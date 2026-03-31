@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import {
-  getBedSummary, getProperties, getRooms,
-  addRoom, updateRoom, deleteRoom, addTenant, getAvailableRooms
+  getBedSummary, getProperties,
+  addRoom, updateRoom, deleteRoom, addTenant
 } from '../services/api';
 import toast from 'react-hot-toast';
 
