@@ -278,8 +278,8 @@ const Rooms = () => {
                   Room {room.roomNumber}
                 </div>
                 <div style={s.cardActions}>
-                  <button style={s.editBtn} onClick={() => handleEdit(room)} title="Edit">✏️</button>
-                  <button style={s.delBtn}  onClick={() => handleDelete(room._id)} title="Delete">🗑</button>
+                  <button style={s.editBtn} onClick={() => handleEdit(room)} title="Edit">Edit</button>
+                  <button style={s.delBtn}  onClick={() => handleDelete(room._id)} title="Delete">Delete</button>
                 </div>
               </div>
 
@@ -476,8 +476,8 @@ const s = {
   cardHead: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' },
   roomBadge: { fontSize: '14px', fontWeight: '700', padding: '4px 12px', borderRadius: '8px', fontFamily: F },
   cardActions: { display: 'flex', gap: '6px' },
-  editBtn: { width: '30px', height: '30px', backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' },
-  delBtn:  { width: '30px', height: '30px', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' },
+  editBtn: { padding: '6px 14px', backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', color: '#1e40af', fontFamily: F },
+  delBtn:  { padding: '6px 14px', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', color: '#dc2626', fontFamily: F },
   propName: { fontSize: '12px', color: '#6b7280', marginBottom: '10px', fontFamily: F },
   metaRow: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' },
   typePill: { fontSize: '11px', fontWeight: '700', padding: '3px 10px', borderRadius: '20px', textTransform: 'capitalize', fontFamily: F },

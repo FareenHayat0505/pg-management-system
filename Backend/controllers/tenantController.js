@@ -1,6 +1,7 @@
 const Tenant = require('../models/Tenant');
 const User = require('../models/User');
-const Room = require('../models/Room');
+const Room = require('../models/Room'); 
+
 
 // @desc    Add new tenant
 // @route   POST /api/tenants
@@ -139,29 +140,29 @@ const updateTenant = async (req, res) => {
 const checkoutTenant = async (req, res) => {
   try {
     const tenant = await Tenant.findById(req.params.id);
-    if (!tenant) {
-      return res.status(404).json({ message: 'Tenant not found' });
-    }
+    if (!tenant) return res.status(404).json({ message: 'Tenant not found' });
 
     // Mark tenant inactive
     tenant.isActive = false;
-    tenant.leaveDate = Date.now();
+    tenant.leaveDate = new Date();
     await tenant.save();
 
-    // Update room occupied count
+    // Free up the bed
     const room = await Room.findById(tenant.room);
-    if (room) {
-      room.occupied = Math.max(0, room.occupied - 1);
-      room.status = room.occupied < room.capacity ? 'available' : 'full';
+    if (room && room.occupied > 0) {
+      room.occupied -= 1;
+      if (room.occupied < room.capacity) room.status = 'available';
       await room.save();
     }
+
+    // Deactivate user account so they can't login
+    await User.findByIdAndUpdate(tenant.user, { isActive: false });
 
     res.json({ message: 'Tenant checked out successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 module.exports = {
   addTenant, getTenants, getTenantById,
   getMyProfile, updateTenant, checkoutTenant

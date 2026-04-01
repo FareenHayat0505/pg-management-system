@@ -51,6 +51,17 @@ const createPayment = async (req, res) => {
 // @access  Admin
 const getPayments = async (req, res) => {
   try {
+    const today = new Date();
+    
+    // Auto mark overdue
+    await Payment.updateMany(
+      {
+        status: 'pending',
+        dueDate: { $lt: today }
+      },
+      { $set: { status: 'overdue' } }
+    );
+
     const payments = await Payment.find()
       .populate(populate)
       .sort({ year: -1, month: -1 });
@@ -114,26 +125,35 @@ const markOverdue = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};
+}; 
 
 // @desc    Get payment summary
 // @route   GET /api/payments/summary
 // @access  Admin
 const getPaymentSummary = async (req, res) => {
   try {
-    const payments = await Payment.find();
+    const today = new Date();
 
-    const totalCollected = payments.filter(p => p.status === 'paid')
-      .reduce((a, p) => a + p.amount, 0);
-    const totalPending = payments.filter(p => p.status === 'pending')
-      .reduce((a, p) => a + p.amount, 0);
-    const totalOverdue = payments.filter(p => p.status === 'overdue')
-      .reduce((a, p) => a + p.amount, 0);
+    // Fix null dueDates first
+    const paymentsWithNullDue = await Payment.find({ dueDate: null });
+    for (const p of paymentsWithNullDue) {
+      p.dueDate = new Date(p.year, p.month - 1, 1);
+      await p.save();
+    }
+
+    // Auto mark overdue
+    await Payment.updateMany(
+      { status: 'pending', dueDate: { $lt: today } },
+      { $set: { status: 'overdue' } }
+    );
+
+    const payments = await Payment.find();
+    const totalCollected = payments.filter(p => p.status === 'paid').reduce((a, p) => a + p.amount, 0);
+    const totalPending   = payments.filter(p => p.status === 'pending').reduce((a, p) => a + p.amount, 0);
+    const totalOverdue   = payments.filter(p => p.status === 'overdue').reduce((a, p) => a + p.amount, 0);
 
     res.json({
-      totalCollected,
-      totalPending,
-      totalOverdue,
+      totalCollected, totalPending, totalOverdue,
       paid:    payments.filter(p => p.status === 'paid').length,
       pending: payments.filter(p => p.status === 'pending').length,
       overdue: payments.filter(p => p.status === 'overdue').length,
@@ -143,7 +163,6 @@ const getPaymentSummary = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 module.exports = {
   createPayment,
   getPayments,

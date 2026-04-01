@@ -243,16 +243,16 @@ const Tenants = () => {
 
                   {/* Contact */}
                   <td style={s.td}>
-                    <div style={s.phone}>📞 {t.user?.phone || 'N/A'}</div>
+                    <div style={s.phone}> {t.user?.phone || 'N/A'}</div>
                   </td>
 
                   {/* Room & Bed */}
                   <td style={s.td}>
                     <div style={s.roomBadge}>
-                      🏠 Room {t.room?.roomNumber}
+                       Room {t.room?.roomNumber}
                     </div>
                     <div style={s.bedBadge}>
-                      🛏 Bed {t.bedNumber}
+                      Bed {t.bedNumber}
                     </div>
                     <div style={s.rentBadge}>
                       ₹{t.room?.rent?.toLocaleString()}/mo

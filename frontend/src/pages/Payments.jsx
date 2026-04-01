@@ -21,17 +21,20 @@ const Payments = () => {
   });
 
   const fetchData = async () => {
-    try {
-      const [p, s, t] = await Promise.all([getPayments(), getPaymentSummary(), getTenants()]);
-      setPayments(p.data);
-      setSummary(s.data);
-      setTenants(t.data);
-    } catch {
-      toast.error('Failed to load payments');
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    // Call getPayments first — it auto-marks overdue
+    const [pay, t] = await Promise.all([getPayments(), getTenants()]);
+    setPayments(pay.data);
+    setTenants(t.data);
+    // Then get fresh summary
+    const s = await getPaymentSummary();
+    setSummary(s.data);
+  } catch {
+    toast.error('Failed to load payments');
+  } finally {
+    setLoading(false);
+  }
+};
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchData(); }, []);
@@ -129,10 +132,10 @@ const Payments = () => {
       {summary && (
         <div className="summary-row" style={s.summaryRow}>
           {[
-            { label: 'Total Collected', value: `₹${(summary.totalCollected||0).toLocaleString()}`, color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', icon: '💰' },
-            { label: 'Pending Amount',  value: `₹${(summary.totalPending||0).toLocaleString()}`,   color: '#d97706', bg: '#fffbeb', border: '#fde68a', icon: '⏳' },
-            { label: 'Overdue Amount',  value: `₹${(summary.totalOverdue||0).toLocaleString()}`,   color: '#dc2626', bg: '#fef2f2', border: '#fecaca', icon: '🚨' },
-            { label: 'Total Tenants',   value: tenants.length,                                      color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe', icon: '👥' },
+            { label: 'Total Collected', value: `₹${(summary.totalCollected||0).toLocaleString()}`, color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0'},
+            { label: 'Pending Amount',  value: `₹${(summary.totalPending||0).toLocaleString()}`,   color: '#d97706', bg: '#fffbeb', border: '#fde68a'},
+            { label: 'Overdue Amount',  value: `₹${(summary.totalOverdue||0).toLocaleString()}`,   color: '#dc2626', bg: '#fef2f2', border: '#fecaca'},
+            { label: 'Total Tenants',   value: tenants.length,                                      color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe'},
           ].map(c => (
             <div key={c.label} className="kpi-card" style={{...s.summaryCard, backgroundColor: c.bg, borderColor: c.border}}>
               <div style={s.summaryTop}>
@@ -425,7 +428,7 @@ const Payments = () => {
               {/* Timeline */}
               {tenantHistory.length === 0 ? (
                 <div style={s.empty}>
-                  <div style={s.emptyIcon}>📭</div>
+                  {/* <div style={s.emptyIcon}>📭</div> */}
                   <div style={s.emptyTitle}>No payment records</div>
                   <div style={s.emptyText}>No payments found for this tenant</div>
                 </div>

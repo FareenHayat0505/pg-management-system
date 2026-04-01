@@ -225,7 +225,7 @@ const Notices = () => {
                     </div>
                   </div>
                   {isAdmin && (
-                    <button style={s.delBtn} onClick={() => handleDelete(n._id)}>🗑</button>
+                    <button style={s.delBtn} onClick={() => handleDelete(n._id)}>Delete</button>
                   )}
                 </div>
 
@@ -301,8 +301,8 @@ const s = {
   cardMeta: { display: 'flex', alignItems: 'center', gap: '8px' },
   typePill: { fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: '20px', textTransform: 'capitalize', fontFamily: F },
   cardDate: { fontSize: '11px', color: '#9ca3af', fontFamily: F },
-  delBtn: { width: '30px', height: '30px', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', flexShrink: 0 },
 
+  delBtn:  { padding: '6px 14px', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', color: '#dc2626', fontFamily: F },
   divider: { height: '1px', backgroundColor: '#f3f4f6', margin: '0 16px' },
   cardContent: { fontSize: '13px', color: '#374151', lineHeight: 1.7, padding: '12px 16px', fontFamily: F },
 

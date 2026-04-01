@@ -10,10 +10,10 @@ const noticeSchema = new mongoose.Schema({
     required: true
   },
   type: {
-    type: String,
-    enum: ['general', 'maintenance', 'policy', 'urgent'],
-    default: 'general'
-  },
+  type: String,
+  enum: ['general', 'maintenance', 'payment', 'event', 'emergency'],
+  default: 'general'
+},
   isUrgent: {
     type: Boolean,
     default: false
