@@ -12,10 +12,15 @@ import Properties from './pages/Properties';
 import TenantDashboard from './pages/TenantDashboard';
 
 const ProtectedRoute = ({ children, adminOnly }) => {
-  const { user, loading } = useAuth();
-  if (loading) return <div style={{padding:'40px',textAlign:'center'}}>Loading...</div>;
-  if (!user) return <Navigate to="/login" />;
-  if (adminOnly && user.role !== 'admin') return <Navigate to="/maintenance" />;
+ const { user, loading } = useAuth();
+  if (loading) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'Poppins, sans-serif', color: '#6b7280' }}>
+      Loading...
+    </div>
+  );
+  
+  if (!user) return <Navigate to="/login" replace />;
+  if (adminOnly && user.role !== 'admin') return <Navigate to="/" replace />;
   return children;
 };
 
@@ -23,7 +28,9 @@ const AppRoutes = () => {
   const { user } = useAuth();
   return (
     <Routes>
-      <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+     <Route path="/login" element={
+  !user ? <Login /> : <Navigate to="/" replace />
+} />
 
       {/* <Route path="/" element={
         <ProtectedRoute adminOnly><Dashboard /></ProtectedRoute>

@@ -44,21 +44,23 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'Please provide email and password' });
     } 
     // Check if user is active
-if (user.isActive === false) {
-  return res.status(401).json({ message: 'Your account has been deactivated. Please contact admin.' });
-}
+
 
     const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
-    }
+    } 
+    if (user.isActive === false) {
+  return res.status(401).json({ message: 'Your account has been deactivated. Please contact admin.' });
+}
 
     const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid email or password' });
-    }
+    } 
+    
 
     res.json({
       _id: user._id,

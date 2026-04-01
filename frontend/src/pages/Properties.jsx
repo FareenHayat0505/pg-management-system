@@ -177,9 +177,8 @@ const Properties = () => {
                 </div>
               )}
 
-              <div style={s.cardFoot}>
+             <div style={s.cardFoot}>
   <span style={s.footItem}>{p.contactPhone || 'N/A'}</span>
-  <span style={s.footItem}>{p.totalFloors} floor{p.totalFloors > 1 ? 's' : ''}</span>
   <span style={{...s.statusBadge, backgroundColor: p.isActive ? '#dcfce7' : '#fee2e2', color: p.isActive ? '#16a34a' : '#dc2626'}}>
     {p.isActive ? 'Active' : 'Inactive'}
   </span>

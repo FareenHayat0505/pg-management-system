@@ -52,17 +52,18 @@ const createPayment = async (req, res) => {
 const getPayments = async (req, res) => {
   try {
     const today = new Date();
-    
+
     // Auto mark overdue
     await Payment.updateMany(
-      {
-        status: 'pending',
-        dueDate: { $lt: today }
-      },
+      { status: 'pending', dueDate: { $lte: today } },
       { $set: { status: 'overdue' } }
     );
 
-    const payments = await Payment.find()
+    // Only return payments for active tenants
+    const activeTenants = await Tenant.find({ isActive: true });
+    const activeTenantIds = activeTenants.map(t => t._id);
+
+    const payments = await Payment.find({ tenant: { $in: activeTenantIds } })
       .populate(populate)
       .sort({ year: -1, month: -1 });
     res.json(payments);
@@ -70,7 +71,6 @@ const getPayments = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 // @desc    Get my payments (tenant)
 // @route   GET /api/payments/my-payments
 // @access  Tenant
@@ -117,7 +117,7 @@ const markOverdue = async (req, res) => {
     const result = await Payment.updateMany(
       {
         status: 'pending',
-        dueDate: { $lt: today }
+        dueDate: { $lte: today } 
       },
       { $set: { status: 'overdue' } }
     );
@@ -134,20 +134,27 @@ const getPaymentSummary = async (req, res) => {
   try {
     const today = new Date();
 
-    // Fix null dueDates first
-    const paymentsWithNullDue = await Payment.find({ dueDate: null });
-    for (const p of paymentsWithNullDue) {
+    // Fix null dueDates
+    const nullDues = await Payment.find({ dueDate: null });
+    for (const p of nullDues) {
       p.dueDate = new Date(p.year, p.month - 1, 1);
       await p.save();
     }
 
     // Auto mark overdue
     await Payment.updateMany(
-      { status: 'pending', dueDate: { $lt: today } },
+      { status: 'pending', dueDate: { $lte: today } },
       { $set: { status: 'overdue' } }
     );
 
-    const payments = await Payment.find();
+    // Only count payments for active tenants
+    const activeTenants = await Tenant.find({ isActive: true });
+    const activeTenantIds = activeTenants.map(t => t._id);
+    
+    const payments = await Payment.find({ 
+      tenant: { $in: activeTenantIds } 
+    });
+
     const totalCollected = payments.filter(p => p.status === 'paid').reduce((a, p) => a + p.amount, 0);
     const totalPending   = payments.filter(p => p.status === 'pending').reduce((a, p) => a + p.amount, 0);
     const totalOverdue   = payments.filter(p => p.status === 'overdue').reduce((a, p) => a + p.amount, 0);

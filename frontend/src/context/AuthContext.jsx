@@ -1,31 +1,45 @@
-import { createContext, useState, useContext, useEffect } from 'react';
-import { login as loginAPI } from '../services/api';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { login as loginApi, getProfile } from '../services/api';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser]     = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check if user is already logged in on app start
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    const verifyUser = async () => {
+      const token  = localStorage.getItem('token');
+      const stored = localStorage.getItem('user');
+
+      if (token && stored) {
+        try {
+          // Verify token is still valid with backend
+          await getProfile();
+          setUser(JSON.parse(stored));
+        } catch {
+          // Token invalid or user deactivated — clear everything
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setUser(null);
+        }
+      }
+      setLoading(false);
+    };
+
+    verifyUser();
   }, []);
 
-  // Login function
   const login = async (email, password) => {
-    const { data } = await loginAPI({ email, password });
+    const { data } = await loginApi({ email, password });
+    localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data));
     setUser(data);
     return data;
   };
 
-  // Logout function
   const logout = () => {
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
   };
@@ -37,5 +51,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use auth anywhere
 export const useAuth = () => useContext(AuthContext);

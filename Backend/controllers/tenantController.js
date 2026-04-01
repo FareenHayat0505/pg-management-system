@@ -139,28 +139,54 @@ const updateTenant = async (req, res) => {
 // @access  Admin only
 const checkoutTenant = async (req, res) => {
   try {
-    const tenant = await Tenant.findById(req.params.id);
-    if (!tenant) return res.status(404).json({ message: 'Tenant not found' });
+    const tenantId = req.params.id;
 
-    // Mark tenant inactive
+    // 1. Find tenant
+    const tenant = await Tenant.findById(tenantId);
+
+    if (!tenant) {
+      return res.status(404).json({
+        message: 'Tenant not found'
+      });
+    }
+
+    // 2. Mark tenant inactive
     tenant.isActive = false;
     tenant.leaveDate = new Date();
     await tenant.save();
 
-    // Free up the bed
+    // 3. Update room occupancy
     const room = await Room.findById(tenant.room);
+
     if (room && room.occupied > 0) {
       room.occupied -= 1;
-      if (room.occupied < room.capacity) room.status = 'available';
+
+      if (room.occupied < room.capacity) {
+        room.status = 'available';
+      }
+
       await room.save();
     }
 
-    // Deactivate user account so they can't login
-    await User.findByIdAndUpdate(tenant.user, { isActive: false });
+    // 4. Deactivate linked user (CRITICAL FIX)
+    const userId = tenant.user;
 
-    res.json({ message: 'Tenant checked out successfully' });
+    await User.findByIdAndUpdate(
+      userId,
+      { isActive: false },
+      { new: true }
+    );
+
+    res.json({
+      message: 'Tenant checked out successfully'
+    });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Server error'
+    });
   }
 };
 module.exports = {

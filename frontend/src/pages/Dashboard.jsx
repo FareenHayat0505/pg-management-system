@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { getPaymentSummary, getMaintenanceSummary, getRooms, getTenants, getPayments } from '../services/api';
+import { getPaymentSummary, getMaintenanceSummary, getRooms, getTenants, getPayments } from '../services/api'; 
+
 
 const F = "'Poppins', sans-serif";
 
@@ -32,7 +33,15 @@ const Dashboard = () => {
   } finally {
     setLoading(false);
   }
-};
+}; 
+useEffect(() => {
+  if (payments.length > 0) {
+    const overdue = payments.filter(p => p.status === 'overdue');
+    if (overdue.length > 0) {
+      toast.error(`${overdue.length} payment(s) are overdue!`, { duration: 5000 });
+    }
+  }
+}, [payments]);
 
   const totalBeds     = rooms.reduce((a, r) => a + (r.capacity || 0), 0);
   const occupiedBeds  = rooms.reduce((a, r) => a + (r.occupied  || 0), 0);
