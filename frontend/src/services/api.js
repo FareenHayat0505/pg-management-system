@@ -1,18 +1,19 @@
 import axios from 'axios';
 
-// Base URL of your backend
 const API = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'https://pg-management-system-j9ya.onrender.com/api'
 });
 
-// Automatically attach token to every request
+// Attach token to every request
 API.interceptors.request.use((config) => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  if (user && user.token) {
-    config.headers.Authorization = `Bearer ${user.token}`;
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-}); 
+});
+
+// Auto logout on 401
 API.interceptors.response.use(
   response => response,
   error => {
@@ -24,11 +25,6 @@ API.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-API.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
 
 // AUTH
 export const login = (data) => API.post('/auth/login', data);
@@ -41,6 +37,7 @@ export const getAvailableRooms = () => API.get('/rooms/available');
 export const addRoom = (data) => API.post('/rooms', data);
 export const updateRoom = (id, data) => API.put(`/rooms/${id}`, data);
 export const deleteRoom = (id) => API.delete(`/rooms/${id}`);
+export const getBedSummary = () => API.get('/rooms/bed-summary');
 
 // TENANTS
 export const getTenants = () => API.get('/tenants');
@@ -67,10 +64,11 @@ export const getMaintenanceSummary = () => API.get('/maintenance/summary');
 // NOTICES
 export const getNotices = () => API.get('/notices');
 export const createNotice = (data) => API.post('/notices', data);
-export const deleteNotice = (id) => API.delete(`/notices/${id}`); 
+export const deleteNotice = (id) => API.delete(`/notices/${id}`);
+
+// PROPERTIES
 export const getProperties = () => API.get('/properties');
 export const createProperty = (data) => API.post('/properties', data);
 export const getPropertyById = (id) => API.get(`/properties/${id}`);
 export const updateProperty = (id, data) => API.put(`/properties/${id}`, data);
-export const deleteProperty = (id) => API.delete(`/properties/${id}`); 
-export const getBedSummary = () => API.get('/rooms/bed-summary');
+export const deleteProperty = (id) => API.delete(`/properties/${id}`);
