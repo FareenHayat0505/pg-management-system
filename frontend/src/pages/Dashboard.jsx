@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { getPaymentSummary, getMaintenanceSummary, getRooms, getTenants, getPayments } from '../services/api'; 
-
+import toast from 'react-hot-toast';
 
 const F = "'Poppins', sans-serif";
 
